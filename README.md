@@ -9,7 +9,7 @@ How to run a server (hopefully I'll make this easier in the future, but for righ
 5. If people are connecting from outside your LAN, you must port forward (default port to port forward is 1234)
 
 How to connect to a server:
-1. Download client_exe.zip
+1. Download and extract client_exe.zip
 2. Run client_console.exe (NOT client.exe)
 3. Input the server's local IP if you are connecting from LAN, otherwise put their public IP (must be port forwarding)
 4. Input the port (default is 1234)
