@@ -29,17 +29,17 @@ while True:
 # Main GUI
 
 tk = Tk()
-tk.geometry = "500x400"
-tk.title = "Cube Racer"
+tk.title(f'Cube racer: {USERNAME}')
+tk.geometry('460x300')
 
-scramble_label = Label(tk, text="Scramble: ", font=("Segoe", 16))
-scramble_label.grid(row=1, column=1)
+scramble_label = Label(tk, text="Scramble: ", font=("Segoe", 13))
+scramble_label.place(x=10, y=5)
 
 text_box = Text(tk, height=5, width=32, font="Segoe, 16")
-text_box.grid(row=2, column=1)
+text_box.place(in_=scramble_label, relx=0, rely=1.0, x=0, y=20)
 
-entry_box = Entry(tk, width=10, font=("Segoe", 16))
-entry_box.grid(row=3, column=1)
+entry_box = Entry(tk, width=32, font=("Segoe", 16))
+entry_box.place(in_=text_box, relx=0, rely=1.0, x=0, y=20)
 
 # Constants
 HEADERSIZE = 10
@@ -77,7 +77,7 @@ class Game:
 
         # Recieve and display the scramble
         scramble = recieve()
-        scramble_label['text'] = f"Scramble: {scramble}"
+        scramble_label['text'] = f"Scramble:\n{scramble}"
         self.only_scramble = False
 
     def inspection(self):
@@ -98,7 +98,7 @@ class Game:
             # Playsound if inspection is at 8, 12, or 15
             for i in [i * REFRESH for i in (8, 12, 15)]:
                 if seconds == i:
-                    playsound(f"{int(i / REFRESH)}.mp3")
+                    playsound(f"sounds/{int(i / REFRESH)}.mp3")
 
             # Display +2 if the user has a penalty of +2
             if seconds >= 15 * REFRESH:
@@ -109,7 +109,7 @@ class Game:
 
         else:  # If the penalty is a DNF
             self.penalty = "DNF"
-            playsound("dnf.mp3")
+            playsound("sounds/dnf.mp3")
             update_widget(text_box, "DNF")
 
     def time_solve(self):  # Times the solve
