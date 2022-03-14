@@ -39,17 +39,22 @@ class Game:
 
         for client in self.participating_clients:
             # Send "start game" to clients
-            send(client, "start game")
+            self.send(client, "start game")
             # Send scramble to clients
-            send(client, scramble)
+            self.send(client, scramble)
 
     def generate_leaderboard(self):
         # Listen until all clients are finished or the time exceeds MAX_TIME constant
         times = {}
         for client in self.participating_clients:
-            username = recieve(client)
-            user_time = recieve(client)
-            penalty = recieve(client)
+            info = self.recieve(client)
+
+            if not info:
+                return
+
+            username = info.get("username")
+            user_time = info.get("user_time")
+            penalty = info.get("penalty")
 
             if penalty == "DNF":
                 user_time = "DNF"
@@ -61,37 +66,34 @@ class Game:
 
         # Send times to client
         for client in clients:
-            send(client, times)
+            self.send(client, times)
+
+    def recieve(self, client_socket):
+        logging.debug("Recieving message")
+        try:
+            message_header = client_socket.recv(HEADERSIZE)
+            message_length = int(message_header.decode('utf-8').strip())
+            return pickle.loads(client_socket.recv(message_length))
+
+        except (ConnectionResetError, ValueError):
+            clients.remove(client_socket)
+            self.participating_clients.remove(client_socket)
+            logging.info("Client disconnected.")
+
+    def send(self, client_socket, message):
+        logging.debug(f"Sending message {message} to {client_socket}")
+        try:
+            message = pickle.dumps(message)
+            message = f"{len(message):<{HEADERSIZE}}".encode("utf-8") + message
+            client_socket.send(message)
+
+        except ConnectionResetError:
+            clients.remove(client_socket)
+            self.participating_clients.remove(client_socket)
+            logging.info("Client disconnected.")
 
 
 # Functions
-def recieve(client_socket):
-    logging.debug("Recieving message")
-    try:
-        message_header = client_socket.recv(HEADERSIZE)
-        message_length = int(message_header.decode('utf-8').strip())
-
-    except (ConnectionResetError, ValueError):
-        clients.remove(client_socket)
-        logging.info("Client disconnected.")
-        return
-
-    return pickle.loads(client_socket.recv(message_length))
-
-
-def send(client_socket, message):
-    logging.debug(f"Sending message {message}")
-    try:
-        message = pickle.dumps(message)
-        message = f"{len(message):<{HEADERSIZE}}".encode("utf-8") + message
-        client_socket.send(message)
-
-    except ConnectionResetError:
-        clients.remove(client_socket)
-        logging.info("Client disconnected.")
-        return
-
-
 def manage_clients():
     logging.info("Waiting for clients to connect")
     while True:
