@@ -81,7 +81,7 @@ class Game:
             logging.info("Client disconnected.")
 
     def send(self, client_socket, message):
-        logging.debug(f"Sending message {message} to {client_socket}")
+        logging.debug(f"Sending message {message}")
         try:
             message = pickle.dumps(message)
             message = f"{len(message):<{HEADERSIZE}}".encode("utf-8") + message
