@@ -47,10 +47,10 @@ class Game:
         # Listen until all clients are finished or the time exceeds MAX_TIME constant
         times = {}
         for client in self.participating_clients:
-            info = self.recieve(client)
+            info = self.receive(client)
 
             if not info:
-                return
+                continue
 
             username = info.get("username")
             user_time = info.get("user_time")
@@ -68,17 +68,20 @@ class Game:
         for client in clients:
             self.send(client, times)
 
-    def recieve(self, client_socket):
-        logging.debug("Recieving message")
-        try:
-            message_header = client_socket.recv(HEADERSIZE)
-            message_length = int(message_header.decode('utf-8').strip())
-            return pickle.loads(client_socket.recv(message_length))
+    def receive(self, client_socket):
+        logging.info("Receiving message")
+        message_header = b""
+        while len(message_header) < HEADERSIZE:
+            read = client_socket.recv(HEADERSIZE - len(message_header))
+            if not read:
+                clients.remove(client_socket)
+                self.participating_clients.remove(client_socket)
+                logging.info("Client disconnected.")
+                return
+            message_header += read
 
-        except (ConnectionResetError, ValueError):
-            clients.remove(client_socket)
-            self.participating_clients.remove(client_socket)
-            logging.info("Client disconnected.")
+        message_length = int(message_header.decode('utf-8').strip())
+        return pickle.loads(client_socket.recv(message_length))
 
     def send(self, client_socket, message):
         logging.debug(f"Sending message {message}")
