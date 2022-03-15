@@ -1,6 +1,7 @@
 # Cube-Racer
 A Rubik's cube racer
 
+IF RUNNING A SERVER:
 How to run a server (hopefully I'll make this easier in the future, but for right now):
 1. Install Node.js. This is need to generate a scramble.
 2. Have python installed.
@@ -8,8 +9,9 @@ How to run a server (hopefully I'll make this easier in the future, but for righ
 4. Set the IP constant to your local IP. Can be found under "IPv4 Address" in ipconfig (Windows)
 5. If people are connecting from outside your LAN, you must port forward (default port to port forward is 1234)
 
+IF CONNECTING TO A SERVER:
 How to connect to a server:
-1. Download and extract client_exe.zip
+1. Download and extract client.zip from releases
 2. Run client_console.exe (NOT client.exe)
 3. Input the server's local IP if you are connecting from LAN, otherwise put their public IP (must be port forwarding)
 4. Input the port (default is 1234)
